@@ -2,6 +2,7 @@
 #include <ESP8266HTTPClient.h>
 #include <ArduinoJson.h>
 
+#define relayPin 05 // D1
 
 // WiFi Parameters
 const char* ssid = "ssid";
@@ -20,12 +21,12 @@ void update() {
       DynamicJsonBuffer jsonBuffer(bufferSize);
       JsonObject& root = jsonBuffer.parseObject(http.getString());
       if (root["toggle"] == "true") {
-
+        digitalWrite(relayPin, LOW);
       } else {
-
+        digitalWrite(relayPin, HIGH);
       }
     } else {
-      
+      digitalWrite(relayPin, HIGH);
     }
     http.end();
     
@@ -44,6 +45,8 @@ void setup() {
   WiFi.setSleepMode(WIFI_NONE_SLEEP);
   // Load data
   Serial.begin(115200);
+  pinMode(relayPin, OUTPUT);
+  digitalWrite(relayPin, HIGH);
 }
 
 void loop() {
