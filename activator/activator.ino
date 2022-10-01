@@ -42,7 +42,7 @@ void update() {
     WiFiClient client;
     HTTPClient http;
     Serial.print("[HTTP] begin...\n");
-    if(http.begin(client, "http://192.168.0.62:8001/test.json")) { // http://192.168.0.40:8889/api/device/chauffe-eau
+    if(http.begin(client, "http://192.168.0.40:8889/api/device/chauffe-eau")) { // http://192.168.0.62:8001/test.json 
       int httpCode = http.GET();                                                   
       if (httpCode > 0) {
         Serial.printf("[HTTP] GET... code: %d\n", httpCode);

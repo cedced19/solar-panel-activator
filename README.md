@@ -7,3 +7,5 @@ Create a congig.h file:
 #define SSID "ssid"
 #define PASSWORD "passwd"
 ```
+
+![schema](schema.jpg)
