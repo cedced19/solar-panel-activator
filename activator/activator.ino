@@ -1,5 +1,10 @@
+#include <Arduino.h>
+
 #include <ESP8266WiFi.h>
+
 #include <ESP8266HTTPClient.h>
+
+#include <WiFiClient.h>
 #include <ArduinoJson.h>
 
 #define relayPin 05 // D1
@@ -11,47 +16,75 @@ const char* password = "password";
 // Timers
 unsigned long timer = 0;
 
-void update() {
-    HTTPClient http;  
-    http.begin("http://192.168.0.40:8889/api/device/chauffe-eau");
-    int httpCode = http.GET();                                                        
-    if (httpCode > 0) {
-      // Parsing
-      const size_t bufferSize = JSON_OBJECT_SIZE(2) + JSON_OBJECT_SIZE(3) + JSON_OBJECT_SIZE(5) + JSON_OBJECT_SIZE(8) + 370;
-      DynamicJsonBuffer jsonBuffer(bufferSize);
-      JsonObject& root = jsonBuffer.parseObject(http.getString());
-      if (root["toggle"] == "true") {
-        digitalWrite(relayPin, LOW);
-      } else {
-        digitalWrite(relayPin, HIGH);
-      }
-    } else {
-      digitalWrite(relayPin, HIGH);
-    }
-    http.end();
-    
-}
-
 void setup() {
+
+  Serial.begin(115200);
   WiFi.begin(ssid, password);
-  // Check for connection
+  WiFi.mode(WIFI_STA);
+  WiFi.setSleepMode(WIFI_NONE_SLEEP);
+
   while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
+    Serial.printf("[SETUP] Connecting...\n");
     digitalWrite(2, LOW);
     delay(1000);
   }
   digitalWrite(2, HIGH); 
-  WiFi.mode(WIFI_STA);
-  WiFi.setSleepMode(WIFI_NONE_SLEEP);
-  // Load data
-  Serial.begin(115200);
+
+  
   pinMode(relayPin, OUTPUT);
   digitalWrite(relayPin, HIGH);
 }
 
-void loop() {
-   if(millis() > timer + 120000){
+void update() {
+    WiFiClient client;
+    HTTPClient http;
+    Serial.print("[HTTP] begin...\n");
+    if(http.begin(client, "http://192.168.0.62:8001/test.json")) { // http://192.168.0.40:8889/api/device/chauffe-eau
+      int httpCode = http.GET();                                                        
+    int httpCode = http.GET();                                                        
+      int httpCode = http.GET();                                                        
+      if (httpCode > 0) {
+        Serial.printf("[HTTP] GET... code: %d\n", httpCode);
+        // Parsing
+        StaticJsonDocument<200> root;
+        
+        DeserializationError error = deserializeJson(root, http.getString());
+
+        // Test if parsing succeeds.
+        if (error) {
+          Serial.print("[JSON PARSER] deserializeJson() failed: ");
+          Serial.println(error.f_str());
+          Serial.print("[DECISION] Desactivating\n");
+          digitalWrite(relayPin, HIGH);
+          return;
+        }
         timer = millis();
-        update();
-   }
+        if (root["toggle"] == true) {
+          Serial.print("[DECISION] Activating\n");
+          digitalWrite(relayPin, LOW);
+        } else {
+          Serial.print("[DECISION] Desactivating\n");
+          digitalWrite(relayPin, HIGH);
+        }
+      } else {
+        Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
+        Serial.print("[DECISION] Desactivating\n");
+        digitalWrite(relayPin, HIGH);
+      }
+      http.end();
+    } else {
+      Serial.printf("[HTTP] Unable to connect\n");
+      Serial.print("[DECISION] Desactivating\n");
+      digitalWrite(relayPin, HIGH);
+    }
+}
+
+void loop() {
+  // wait for WiFi connection
+  if ((WiFi.status() == WL_CONNECTED)) {
+    if(millis() > timer + 1000) {
+          update();
+    }
+  }
+
 }
