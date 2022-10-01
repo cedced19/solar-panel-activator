@@ -3,7 +3,7 @@ With solar-panel-watch, activate a switch if the solar panel production is beyou
 
 
 Create a congig.h file:
-````c
+```c
 #define SSID "ssid"
 #define PASSWORD "passwd"
 ```
