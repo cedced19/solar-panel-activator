@@ -6,15 +6,18 @@
 
 #include <WiFiClient.h>
 #include <ArduinoJson.h>
+#include "config.h"
 
 #define relayPin 05 // D1
 
 // WiFi Parameters
-const char* ssid = "ssid";
-const char* password = "password";
+const char* ssid = SSID;
+const char* password = PASSWORD;
 
 // Timers
 unsigned long timer = 0;
+
+unsigned long time_limit = 1000;
 
 void setup() {
 
@@ -40,9 +43,7 @@ void update() {
     HTTPClient http;
     Serial.print("[HTTP] begin...\n");
     if(http.begin(client, "http://192.168.0.62:8001/test.json")) { // http://192.168.0.40:8889/api/device/chauffe-eau
-      int httpCode = http.GET();                                                        
-    int httpCode = http.GET();                                                        
-      int httpCode = http.GET();                                                        
+      int httpCode = http.GET();                                                   
       if (httpCode > 0) {
         Serial.printf("[HTTP] GET... code: %d\n", httpCode);
         // Parsing
@@ -59,6 +60,7 @@ void update() {
           return;
         }
         timer = millis();
+        time_limit = root["time_limit"];
         if (root["toggle"] == true) {
           Serial.print("[DECISION] Activating\n");
           digitalWrite(relayPin, LOW);
@@ -82,7 +84,7 @@ void update() {
 void loop() {
   // wait for WiFi connection
   if ((WiFi.status() == WL_CONNECTED)) {
-    if(millis() > timer + 1000) {
+    if(millis() > timer + time_limit) {
           update();
     }
   }
