@@ -28,6 +28,8 @@ int PSM = 05; // D1
 int ZC = 04; // D2  
 int dimming = 128;  // Dimming level (0-128)  0 = ON, 128 = OFF
 
+void  ICACHE_RAM_ATTR zero_crosss_int(void);
+
 void setup()
 {
   pinMode(PSM, OUTPUT);// Set AC Load pin as output
@@ -36,7 +38,7 @@ void setup()
 }
 
 // the interrupt function must take no parameters and return nothing
-ICACHE_RAM_ATTR void zero_crosss_int()  // function to be fired at the zero crossing to dim the light
+void zero_crosss_int()  // function to be fired at the zero crossing to dim the light
 {
   // Firing angle calculation : 1 full 50Hz wave =1/50=20ms 
   // Every zerocrossing thus: (50Hz)-> 10ms (1/2 Cycle) For 60Hz => 8.33ms (10.000/120)
