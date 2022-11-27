@@ -8,4 +8,8 @@ Create a congig.h file:
 #define PASSWORD "passwd"
 ```
 
-![schema](schema.jpg)
+Basic:
+![basic](basic.png)
+
+Advanced:
+![advanced](advanced.png)
