@@ -24,11 +24,11 @@ Pin    |  Interrrupt # | Arduino Platform
 
 In the program pin 2 is chosen
 */
-int PSM = 05; // D1
-int ZC = 04; // D2  
+int PSM = 03; // D1
+int ZC = 02; // D2  
 int dimming = 0;  // Dimming level (0-128)  0 = ON, 128 = OFF
 
-void ICACHE_RAM_ATTR zero_crosss_int(void);
+void zero_crosss_int(void);
 
 void setup()
 {
