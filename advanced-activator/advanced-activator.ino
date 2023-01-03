@@ -63,7 +63,7 @@ void update() {
     WiFiClient client;
     HTTPClient http;
     Serial.print("[HTTP] begin...\n");
-    if(http.begin(client, "http://192.168.0.62:8001/test.json")) {
+    if(http.begin(client, "http://192.168.0.98:8889/api/device/id/1b9d8/advanced")) {
       int httpCode = http.GET();                                                   
       if (httpCode > 0) {
         Serial.printf("[HTTP] GET... code: %d\n", httpCode);
@@ -83,8 +83,8 @@ void update() {
         timer = millis();
         time_limit = root["time_limit"];
         dimming = root["alpha"]; 
-        if (dimming < 4) {
-          dimming = 4;
+        if (dimming < 3) {
+          dimming = 3;
         }
         Serial.print("[DECISION] Alpha = ");
         Serial.print(dimming);
