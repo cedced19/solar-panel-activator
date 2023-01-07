@@ -10,7 +10,7 @@
 
 int PSM = 05; // D1
 int ZC = 04; // D2  
-int dimming = 0;  // Dimming level (0-128)  0 = ON, 128 = OFF
+int dimming = 128;  // Dimming level (0-128)  0 = ON, 128 = OFF
 
 void ICACHE_RAM_ATTR zero_crosss_int(void);
 
@@ -20,6 +20,7 @@ const char* password = PASSWORD;
 
 // Timers
 unsigned long timer = 0;
+unsigned long timer_prevent_failure = 0;
 
 unsigned long time_limit = 1000;
 
@@ -38,9 +39,9 @@ void setup() {
   digitalWrite(LED_BUILTIN, HIGH); 
 
   
-  dimming = 0;
+  dimming = 128;
   pinMode(PSM, OUTPUT);// Set AC Load pin as output
-  attachInterrupt(digitalPinToInterrupt(ZC), zero_crosss_int, RISING);  // Choose the zero cross interrupt # from the table above
+  attachInterrupt(digitalPinToInterrupt(ZC), zero_crosss_int, RISING);  // Choose the zero cross interrupt
 }
 
 // the interrupt function must take no parameters and return nothing
@@ -106,7 +107,12 @@ void loop() {
   // wait for WiFi connection
   if ((WiFi.status() == WL_CONNECTED)) {
     if(millis() > timer + time_limit) {
-          update();
+      update();
     }
+  }
+  // stop each hour to prevent failure
+  if(millis() > timer_prevent_failure + 3600000) {
+    dimming = 128;
+    timer_prevent_failure = millis();
   }
 }
