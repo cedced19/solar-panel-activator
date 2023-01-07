@@ -10,7 +10,7 @@
 
 int PSM = 05; // D1
 int ZC = 04; // D2  
-git int dimming = 128;  // Dimming level (0-128)  0 = ON, 128 = OFF
+int dimming = 128;  // Dimming level (0-128)  0 = ON, 128 = OFF
 
 void ICACHE_RAM_ATTR zero_crosss_int(void);
 
