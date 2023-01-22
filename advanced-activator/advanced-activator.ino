@@ -66,7 +66,7 @@ void update() {
     Serial.print("[HTTP] begin...\n");
     if(http.begin(client, "http://192.168.0.98:8889/api/device/id/1b9d8/advanced")) {
       int httpCode = http.GET();                                                   
-      if (httpCode != 200 || httpCode != 304) {
+      if (httpCode == 200 || httpCode == 304) {
         Serial.printf("[HTTP] GET... code: %d\n", httpCode);
         // Parsing
         StaticJsonDocument<200> root;
