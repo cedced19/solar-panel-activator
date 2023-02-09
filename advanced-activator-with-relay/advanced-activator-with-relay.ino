@@ -10,7 +10,7 @@
 
 int PSM = 05; // D1
 int ZC = 04; // D2  
-int relayPin = 14; // D5  
+int relayPin = 12; // D6 (14 corresponding to D5 on some devices) 
 int dimming = 128;  // Dimming level (0-128)  0 = ON, 128 = OFF
 
 void ICACHE_RAM_ATTR zero_crosss_int(void);
@@ -68,7 +68,7 @@ void update() {
     WiFiClient client;
     HTTPClient http;
     Serial.print("[HTTP] begin...\n");
-    if(http.begin(client, "http://192.168.0.98:8889/api/device/id/1b9d8/advanced")) {
+    if(http.begin(client, "http://192.168.0.98:8889/api/device/id/QQqR9/advanced/")) {
       int httpCode = http.GET();                                                   
       if (httpCode != 200 || httpCode != 304) {
         Serial.printf("[HTTP] GET... code: %d\n", httpCode);
