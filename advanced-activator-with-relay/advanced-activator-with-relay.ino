@@ -59,7 +59,7 @@ void zero_crosss_int()  // function to be fired at the zero crossing to dim the 
   int dimtime = (75*dimming);    // For 60Hz =>65    
   delayMicroseconds(dimtime);    // Off cycle
   digitalWrite(PSM, HIGH);   // triac firing
-  delayMicroseconds(10);         // triac On propogation delay (for 60Hz use 8.33)
+  delayMicroseconds(100);         // triac On propogation delay (for 60Hz use 8.33)
   digitalWrite(PSM, LOW);    // triac Off
   //Serial.print("Trig\n");
 }
@@ -68,7 +68,7 @@ void update() {
     WiFiClient client;
     HTTPClient http;
     Serial.print("[HTTP] begin...\n");
-    if(http.begin(client, "http://192.168.0.98:8889/api/device/id/QQqR9/advanced/")) {
+    if(http.begin(client, "http://192.168.0.98:8889/api/device/id/1b9d8/advanced/")) {
       int httpCode = http.GET();                                                   
       if (httpCode != 200 || httpCode != 304) {
         Serial.printf("[HTTP] GET... code: %d\n", httpCode);
@@ -95,6 +95,7 @@ void update() {
         if (dimming == 128) {
           Serial.print("[DECISION] Desactivating\n");
           digitalWrite(relayPin, HIGH);
+          timer_prevent_failure = millis();
         } else {
           Serial.print("[DECISION] Activating\n");
           digitalWrite(relayPin, LOW);

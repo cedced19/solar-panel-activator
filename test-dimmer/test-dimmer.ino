@@ -48,7 +48,7 @@ void zero_crosss_int()  // function to be fired at the zero crossing to dim the 
   int dimtime = (75*dimming);    // For 60Hz =>65    
   delayMicroseconds(dimtime);    // Off cycle
   digitalWrite(PSM, HIGH);   // triac firing
-  delayMicroseconds(10);         // triac On propogation delay (for 60Hz use 8.33)
+  delayMicroseconds(100);         // triac On propogation delay (for 60Hz use 8.33)
   digitalWrite(PSM, LOW);    // triac Off
   Serial.print("Trig\n");
 }
