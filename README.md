@@ -13,3 +13,6 @@ Basic:
 
 Advanced:
 ![advanced](advanced.png)
+
+Thermistor:
+![thermistor](thermistor.png)
