@@ -23,6 +23,7 @@ const char* password = PASSWORD;
 unsigned long timer = 0;
 unsigned long timer_prevent_failure = 0;
 unsigned long timer_temperature = 0;
+unsigned long timer_wifi = 0;
 
 unsigned long time_limit = 1000;
 
@@ -38,18 +39,26 @@ unsigned long time_limit = 1000;
 // the value of the 'other' resistor
 #define SERIESRESISTOR 10000    
 
-void setup() {
-
-  Serial.begin(115200);
+void initWiFi() {
   WiFi.begin(ssid, password);
   WiFi.mode(WIFI_STA);
   WiFi.setSleepMode(WIFI_NONE_SLEEP);
+  WiFi.setAutoReconnect(true);
+  WiFi.persistent(true);
 
   while (WiFi.status() != WL_CONNECTED) {
-    Serial.printf("[SETUP] Connecting...\n");
+    Serial.printf("[WIFI] Connecting...\n");
     digitalWrite(LED_BUILTIN, LOW);
     delay(1000);
   }
+  Serial.printf("[WIFI] Connected\n");
+  timer_wifi = millis();
+}
+
+void setup() {
+
+  Serial.begin(115200);
+  initWiFi();
   digitalWrite(LED_BUILTIN, HIGH); 
   
   
@@ -81,7 +90,7 @@ void update() {
     WiFiClient client;
     HTTPClient http;
     Serial.print("[HTTP] begin...\n");
-    if(http.begin(client, "http://192.168.0.98:8889/api/device/id/1b9d8/advanced/")) {
+    if(http.begin(client, "http://192.168.0.87:8889/api/device/id/QQqR9/advanced/")) {
       int httpCode = http.GET();                                                   
       if (httpCode != 200 || httpCode != 304) {
         Serial.printf("[HTTP] GET... code: %d\n", httpCode);
@@ -165,7 +174,7 @@ void getTemperature() {
   Serial.println(" degree celsius");
   dtostrf(temperature, 4, 2, temperatureString);
   snprintf(params, 100, "var=%s", temperatureString);
-  httpTemp.begin(clientTemp, "http://192.168.0.98:8889/api/device/id/1b9d8/control-variable/"); // specifie the address
+  httpTemp.begin(clientTemp, "http://192.168.0.87:8889/api/device/id/QQqR9/control-variable/"); // specifie the address
   httpTemp.addHeader("Content-Type", "application/x-www-form-urlencoded");
   httpTemp.POST(params);    
   httpTemp.end();
@@ -180,8 +189,15 @@ void loop() {
       update();
     }
     // Update temperature
-    if(millis() > timer_temperature + 600000) { // each 10min = 600000ms
+    if(millis() > timer_temperature + 120000) { // each 2min = 120000ms
       getTemperature();
+    }
+  } else {
+    // check WiFi Status and disconnect if necessary
+    if (millis() > timer_wifi + 300000) { // each 5min if it fails
+      Serial.println("[WIFI] Reconnecting to WiFi...");
+      WiFi.disconnect();
+      initWiFi();
     }
   }
   // stop each hour to prevent failure
