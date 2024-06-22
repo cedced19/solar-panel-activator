@@ -189,7 +189,7 @@ void loop() {
       update();
     }
     // Update temperature
-    if(millis() > timer_temperature + 120000) { // each 2min = 120000ms
+    if(millis() > timer_temperature + 420000) { // each 7min = 420000ms
       getTemperature();
     }
   } else {
@@ -199,6 +199,9 @@ void loop() {
       WiFi.disconnect();
       initWiFi();
     }
+    // disable 
+    dimming = 128;
+    digitalWrite(relayPin, LOW);
   }
   // stop each hour to prevent failure
   if(millis() > timer_prevent_failure + 3600000) {
